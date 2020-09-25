@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: frontservice
+  name: frontservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontservice
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: frontservice
+    spec:
+      containers:
+      - image: poc-service-probes-frontservice:1.0-SNAPSHOT
+        name: frontservice
+        imagePullPolicy: Never
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: frontservice
+  name: frontservice
+spec:
+  ports:
+  - name: 8080-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: frontservice
+  type: ClusterIP
+status:
+  loadBalancer: {}
