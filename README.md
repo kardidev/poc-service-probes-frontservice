@@ -1,4 +1,4 @@
-# poc-service-probes-frontserver
+# poc-service-probes-frontservice
 
 A front service, which should survive under high load.
 The instance should be excluded from load balancing, if it's not healthy temporary.
