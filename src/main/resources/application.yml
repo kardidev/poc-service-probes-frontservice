@@ -13,7 +13,7 @@ management:
     web:
       base-path: /manage
       exposure:
-        include: info,health,refresh,shutdown
+        include: health,shutdown
   endpoint:
     health:
       probes:
@@ -22,7 +22,7 @@ management:
         readiness:
           include: readinessState,requestPool
         liveness:
-          include: livenessState, diskSpace
+          include: livenessState,diskSpace,fragileComponent
       show-details: always
     shutdown:
       enabled: true

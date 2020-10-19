@@ -9,14 +9,17 @@ import org.springframework.boot.availability.ReadinessState;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * Component, which logs any Spring state change. Used for debugging.
+ */
 @Component
-public class ReadinessStateListener {
+public class SpringReadinessStateListener {
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @EventListener
     public void onStateChange(AvailabilityChangeEvent<ReadinessState> event) {
-        log.info("Readiness state changed to: " + event.getState());
+        log.info("Spring readiness state changed to: " + event.getState());
     }
 
 }

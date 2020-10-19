@@ -1,4 +1,4 @@
-package com.kardidev.poc.cloud.probes.front.service.processor;
+package com.kardidev.poc.cloud.probes.front.service.modules;
 
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.RejectedExecutionException;
@@ -8,27 +8,40 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kardidev.poc.cloud.probes.front.service.dto.RequestPoolStats;
+import com.kardidev.poc.cloud.probes.front.service.dto.ServiceRequest;
+
 @Component
 public class RequestProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final RequestPool requestPool;
-    private final LoadManager loadManager;
 
     @Autowired
-    public RequestProcessor(RequestPool requestPool, LoadManager loadManager) {
+    public RequestProcessor(RequestPool requestPool) {
         this.requestPool = requestPool;
-        this.loadManager = loadManager;
     }
 
+    /**
+     * Checks if a request is valid before starting processing it.
+     *
+     * @param request an instance of ServiceRequest
+     * @return true, if the request is valid, false otherwise
+     */
     public boolean isValid(ServiceRequest request) {
 
         return request.getWeight() > 0 && request.getWeight() < 60;
     }
 
+    /**
+     * Submits a request to a request pool to execute.
+     *
+     * @param request an instance of ServiceRequest
+     * @return true, if there are available resources and the request was accepted for execution
+     */
     public boolean process(ServiceRequest request) {
-        Task task = new Task(request, loadManager);
+        Task task = new Task(request, requestPool);
         try {
             requestPool.submit(task);
             log.info("Request " + request.getId() + " was accepted" + getPoolStats());
@@ -41,34 +54,33 @@ public class RequestProcessor {
     }
 
     private String getPoolStats() {
-        return " (Pool: " + requestPool.getActiveTasks() + "  Queue: " + requestPool.getQueueSize() + ")";
+        RequestPoolStats stats = requestPool.getStats();
+        return " (Pool: " + stats.getActiveTasks() + "  Queue: " + stats.getQueuedTasks() + ")";
     }
 
     private static class Task implements Runnable {
 
         private final ServiceRequest request;
-        private final LoadManager loadManager;
+        private final RequestPool requestPool;
 
-        Task(ServiceRequest request, LoadManager loadManager) {
+        Task(ServiceRequest request, RequestPool requestPool) {
             this.request = request;
-            this.loadManager = loadManager;
+            this.requestPool = requestPool;
         }
 
         @Override
         public void run() {
 
+            // expected processing time based on request weight
             int timeToProcess = request.getWeight();
 
-            timeToProcess += loadManager.registerRequest(request);
+            timeToProcess += requestPool.getStats().getActiveTasks();
 
             try {
                 Thread.sleep(timeToProcess * 1000);
             } catch (InterruptedException e) {
                 // do nothing
             }
-
-            loadManager.withdrawRequest(request.getId());
-
         }
     }
 }

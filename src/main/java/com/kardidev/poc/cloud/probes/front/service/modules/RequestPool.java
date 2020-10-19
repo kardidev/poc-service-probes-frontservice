@@ -1,4 +1,4 @@
-package com.kardidev.poc.cloud.probes.front.service.processor;
+package com.kardidev.poc.cloud.probes.front.service.modules;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -11,7 +11,12 @@ import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.kardidev.poc.cloud.probes.front.service.dto.RequestPoolStats;
 
+/**
+ * A critical component, which can recover itself after some time, once it gets inoperable.
+ * Such a module should be considered as a part of readiness group.
+ */
 @Component
 public class RequestPool {
 
@@ -27,16 +32,24 @@ public class RequestPool {
         executor = createExecutor();
     }
 
+    /**
+     * Submit a task to execute
+     *
+     * @param task instance of Runnable
+     */
     void submit(Runnable task) {
         executor.submit(task);
     }
 
-    int getActiveTasks() {
-        return executor.getActiveCount();
-    }
-
-    int getQueueSize() {
-        return executor.getQueue().size();
+    /**
+     * @return RequestPoolStats with active, queued and completed tasks counters
+     */
+    public RequestPoolStats getStats() {
+        return new RequestPoolStats(
+                executor.getActiveCount(),
+                executor.getQueue().size(),
+                executor.getCompletedTaskCount()
+        );
     }
 
     private ThreadPoolExecutor createExecutor() {

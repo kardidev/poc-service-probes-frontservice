@@ -26,6 +26,9 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
+    /**
+     * Emulates long startup process
+     */
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
         return args -> {
@@ -40,6 +43,9 @@ public class Application {
         };
     }
 
+    /**
+     * Emulates long termination process
+     */
     @PreDestroy
     public void onExit() throws InterruptedException {
         log.info("Project is being shut down...");
