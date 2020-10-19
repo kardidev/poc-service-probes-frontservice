@@ -16,10 +16,12 @@ public class RequestProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private FragileComponent fragileComponent;
     private final RequestPool requestPool;
 
     @Autowired
-    public RequestProcessor(RequestPool requestPool) {
+    public RequestProcessor(FragileComponent fragileComponent, RequestPool requestPool) {
+        this.fragileComponent = fragileComponent;
         this.requestPool = requestPool;
     }
 
@@ -41,6 +43,11 @@ public class RequestProcessor {
      * @return true, if there are available resources and the request was accepted for execution
      */
     public boolean process(ServiceRequest request) {
+
+        if (!fragileComponent.isOperable()) {
+            throw new RuntimeException("Critical module error!");
+        }
+
         Task task = new Task(request, requestPool);
         try {
             requestPool.submit(task);
