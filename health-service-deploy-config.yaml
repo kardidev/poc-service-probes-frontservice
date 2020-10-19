@@ -1,3 +1,6 @@
+#
+# Run and expose two replicas of a service to make it visible from outside via load balancer with both liveness and readiness probes enabled
+#
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -6,7 +9,7 @@ metadata:
     app: frontservice
   name: frontservice
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: frontservice
@@ -25,7 +28,6 @@ spec:
 
           livenessProbe:
             httpGet:
-              # path: /frontservice/ping
               path: /frontservice/manage/health/liveness
               port: 8080
             # initial delay should be big enough to get your container started

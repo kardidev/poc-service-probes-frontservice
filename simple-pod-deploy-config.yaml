@@ -1,0 +1,13 @@
+#
+# Run pod inside a cluster
+#
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontservice
+spec:
+  containers:
+    - name: frontservice
+      image: poc-service-probes-frontservice:1.1-SNAPSHOT
+      ports:
+        - containerPort: 8080

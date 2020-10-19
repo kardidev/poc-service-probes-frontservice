@@ -1,0 +1,48 @@
+#
+# Run and expose service to make it visible from outside via load balancer
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: frontservice
+  name: frontservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontservice
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: frontservice
+    spec:
+      containers:
+        - name: frontservice
+          image: poc-service-probes-frontservice:1.1-SNAPSHOT
+          imagePullPolicy: Never
+          resources: {}
+
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: frontservice
+  name: frontservice
+spec:
+  ports:
+    - name: 8081-8080
+      port: 8081
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: frontservice
+  type: LoadBalancer
+status:
+  loadBalancer: {}
