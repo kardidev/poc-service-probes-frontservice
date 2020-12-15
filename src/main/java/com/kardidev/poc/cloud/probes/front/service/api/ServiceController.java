@@ -42,10 +42,10 @@ public class ServiceController {
      * The service accepts a request and processes it during a given time, which is adjusted based on amount of resources,
      * that is concurrent tasks, used simultaneously. The more requests are being processed at the time of submission the more seconds will be added.
      *
-     * @param weight expected amount of seconds to process the request
+     * @param weight expected amount of milliseconds to process the request
      */
     @GetMapping("/process")
-    public ResponseEntity<ServiceResponse> process(@RequestParam(value = "weight", defaultValue = "1") Integer weight) {
+    public ResponseEntity<ServiceResponse> process(@RequestParam(value = "weight", defaultValue = "1000") Integer weight) {
 
         ServiceRequest request = ServiceRequest.build(weight);
 

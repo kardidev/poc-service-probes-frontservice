@@ -2,9 +2,11 @@ package com.kardidev.poc.cloud.probes.front.service.modules;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 
@@ -20,15 +22,18 @@ import com.kardidev.poc.cloud.probes.front.service.dto.RequestPoolStats;
 @Component
 public class RequestPool {
 
-    private static final int QUEUE_SIZE = 5;
+    public static final int QUEUE_SIZE = 5;
     private static final int CORE_SIZE = 5;
     private static final int MAX_SIZE = 5;
     private static final int KEEP_ALIVE_SEC = 10;
 
     private ThreadPoolExecutor executor;
 
+    private AtomicLong rejected;
+
     @PostConstruct
     public void init() {
+        rejected = new AtomicLong(0);
         executor = createExecutor();
     }
 
@@ -38,7 +43,12 @@ public class RequestPool {
      * @param task instance of Runnable
      */
     void submit(Runnable task) {
-        executor.submit(task);
+        try {
+            executor.submit(task);
+        } catch (RejectedExecutionException e) {
+            rejected.incrementAndGet();
+            throw e;
+        }
     }
 
     /**
@@ -48,7 +58,8 @@ public class RequestPool {
         return new RequestPoolStats(
                 executor.getActiveCount(),
                 executor.getQueue().size(),
-                executor.getCompletedTaskCount()
+                executor.getCompletedTaskCount(),
+                rejected.get()
         );
     }
 

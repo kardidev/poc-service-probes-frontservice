@@ -33,7 +33,7 @@ public class RequestProcessor {
      */
     public boolean isValid(ServiceRequest request) {
 
-        return request.getWeight() > 0 && request.getWeight() < 60;
+        return request.getWeight() > 0 && request.getWeight() < 60_000;
     }
 
     /**
@@ -81,10 +81,10 @@ public class RequestProcessor {
             // expected processing time based on request weight
             int timeToProcess = request.getWeight();
 
-            timeToProcess += requestPool.getStats().getActiveTasks();
+            timeToProcess += requestPool.getStats().getActiveTasks() * 1000;
 
             try {
-                Thread.sleep(timeToProcess * 1000);
+                Thread.sleep(timeToProcess);
             } catch (InterruptedException e) {
                 // do nothing
             }

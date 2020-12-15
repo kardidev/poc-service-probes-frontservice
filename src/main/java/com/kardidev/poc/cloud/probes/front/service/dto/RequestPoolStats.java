@@ -21,4 +21,9 @@ public class RequestPoolStats {
      * Total amount of finished tasks since this instance has been started
      */
     private long completedTasks;
+
+    /**
+     * Total amount of rejected tasks since this instance has been started
+     */
+    private long rejectedTasks;
 }

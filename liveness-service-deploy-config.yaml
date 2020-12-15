@@ -9,7 +9,7 @@ metadata:
     app: frontservice
   name: frontservice
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: frontservice
