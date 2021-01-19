@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: frontservice
-          image: poc-service-probes-frontservice:1.1-SNAPSHOT
+          image: poc-service-probes-frontservice:1.2-SNAPSHOT
           imagePullPolicy: Never
           resources: {}
 
@@ -31,7 +31,7 @@ spec:
               path: /frontservice/manage/health/liveness
               port: 8080
             # initial delay should be big enough to get your container started
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             # liveness probes should be inexpensive and have fast response time to keep time period small
             periodSeconds: 10
             # Number of seconds after which the probe times out. Slow response can point out some serious issues.
@@ -47,7 +47,7 @@ spec:
             # the number of times the readiness probe needs to fail before the pod will no longer be considered ready
             # it depends on health check logic in a target service, still we can forgive some failures with fast recovery
             failureThreshold: 1
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             # time period really depends on components included into readiness group
             # some of them, such as rabbitmq built-in health check, are very expensive and shouldn't be invoked very often
             periodSeconds: 1

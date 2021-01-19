@@ -20,7 +20,7 @@ management:
         enabled: true
       group:
         readiness:
-          include: readinessState,requestPool
+          include: readinessState,requestPool,selfRecoveringComponent
         liveness:
           include: livenessState,diskSpace,fragileComponent
       show-details: always

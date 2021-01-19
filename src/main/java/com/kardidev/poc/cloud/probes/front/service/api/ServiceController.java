@@ -14,6 +14,7 @@ import com.kardidev.poc.cloud.probes.front.service.dto.ServiceResponse;
 import com.kardidev.poc.cloud.probes.front.service.modules.FragileComponent;
 import com.kardidev.poc.cloud.probes.front.service.modules.RequestPool;
 import com.kardidev.poc.cloud.probes.front.service.modules.RequestProcessor;
+import com.kardidev.poc.cloud.probes.front.service.modules.SelfRecoveringComponent;
 import com.kardidev.poc.cloud.probes.front.service.utils.ServiceUtils;
 
 @RestController
@@ -22,12 +23,15 @@ public class ServiceController {
     private final RequestProcessor requestProcessor;
     private final RequestPool requestPool;
     private final FragileComponent fragileComponent;
+    private final SelfRecoveringComponent selfRecoveringComponent;
 
     @Autowired
-    public ServiceController(RequestProcessor requestProcessor, RequestPool requestPool, FragileComponent fragileComponent) {
+    public ServiceController(RequestProcessor requestProcessor, RequestPool requestPool,
+            FragileComponent fragileComponent, SelfRecoveringComponent selfRecoveringComponent) {
         this.requestProcessor = requestProcessor;
         this.requestPool = requestPool;
         this.fragileComponent = fragileComponent;
+        this.selfRecoveringComponent = selfRecoveringComponent;
     }
 
     /**
@@ -64,6 +68,16 @@ public class ServiceController {
     @GetMapping("/break")
     public ResponseEntity<ServiceResponse> breakDown() {
         fragileComponent.breakDown();
+        return ResponseEntity.accepted().body(ServiceResponse.of("ACCEPTED"));
+    }
+
+    /**
+     * Breaks a self recovering component.
+     * This should be a reason to have readiness check fail.
+     */
+    @GetMapping("/interrupt")
+    public ResponseEntity<ServiceResponse> interrupt() {
+        selfRecoveringComponent.breakDown();
         return ResponseEntity.accepted().body(ServiceResponse.of("ACCEPTED"));
     }
 

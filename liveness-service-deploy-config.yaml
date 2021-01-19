@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: frontservice
-          image: poc-service-probes-frontservice:1.1-SNAPSHOT
+          image: poc-service-probes-frontservice:1.2-SNAPSHOT
           imagePullPolicy: Never
           resources: {}
 
@@ -31,7 +31,7 @@ spec:
               path: /frontservice/manage/health/liveness
               port: 8080
             # initial delay should be big enough to get your container started
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             # liveness probes should be inexpensive and have fast response time to keep time period small
             periodSeconds: 10
             # Number of seconds after which the probe times out. Slow response can point out some serious issues.
