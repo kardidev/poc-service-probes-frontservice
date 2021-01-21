@@ -9,7 +9,7 @@ metadata:
     app: frontservice
   name: frontservice
 spec:
-  replicas: 2
+  replicas: 5
   selector:
     matchLabels:
       app: frontservice
@@ -44,10 +44,13 @@ spec:
             httpGet:
               path: /frontservice/manage/health/readiness
               port: 8080
+            
+            initialDelaySeconds: 30
             # the number of times the readiness probe needs to fail before the pod will no longer be considered ready
             # it depends on health check logic in a target service, still we can forgive some failures with fast recovery
             failureThreshold: 1
-            initialDelaySeconds: 30
+            successThreshold: 5
+
             # time period really depends on components included into readiness group
             # some of them, such as rabbitmq built-in health check, are very expensive and shouldn't be invoked very often
             periodSeconds: 1

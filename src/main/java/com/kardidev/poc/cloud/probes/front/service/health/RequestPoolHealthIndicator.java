@@ -36,6 +36,6 @@ public class RequestPoolHealthIndicator extends AbstractHealthIndicator {
      * If there are some tasks waiting in the queue, there is a risk that the next request will be rejected
      */
     private boolean isLackOfResources() {
-        return requestPool.getStats().getQueuedTasks() == RequestPool.QUEUE_SIZE;
+        return requestPool.getStats().getQueuedTasks() >= RequestPool.QUEUE_SIZE - 1;
     }
 }
